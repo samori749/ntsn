@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КиберБитва: Информатика 7 класс (30 игроков)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            touch-action: manipulation;
+        }
+        .font-pixel {
+            font-family: 'Press Start 2P', cursive;
+        }
+        .neon-border {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.35);
+        }
+        .neon-glow-green {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+        .neon-glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+        .card-glass {
+            background: rgba(30, 41, 59, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.8);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-2 sm:p-4 selection:bg-indigo-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="w-full max-w-5xl flex justify-between items-center py-3 px-2 border-b border-slate-800">
+        <div class="flex items-center space-x-2 sm:space-x-3">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-pixel text-lg sm:text-xl text-yellow-300 shadow-lg">
+                &lt;&gt;
+            </div>
+            <div>
+                <h1 class="font-pixel text-sm sm:text-lg text-indigo-400 tracking-wider">КИБЕРБИТВА</h1>
+                <p class="text-[10px] sm:text-xs text-slate-400">Информатика • 7 класс • 45 вопросов</p>
+            </div>
+        </div>
+        <button id="soundToggle" onclick="toggleSound()" class="px-3 py-1.5 rounded-lg card-glass text-xs text-slate-300 hover:bg-slate-700 transition flex items-center gap-1">
+            <span id="soundIcon">🔊</span> <span class="hidden sm:inline">Звук: Вкл</span>
+        </button>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-5xl my-auto py-4 sm:py-6">
+
+        <!-- SCREEN 1: SETUP -->
+        <section id="setupScreen" class="card-glass rounded-2xl p-4 sm:p-8 neon-border transition-all max-w-3xl mx-auto">
+            <div class="text-center mb-6">
+                <h2 class="text-xl sm:text-3xl font-bold text-white mb-2">Настройка турнира</h2>
+                <p class="text-slate-400 text-xs sm:text-sm">Викторина для класса и групп от 1 до 30 участников. 45 вопросов средней сложности!</p>
+            </div>
+
+            <!-- Players Count Slider & Quick Presets -->
+            <div class="mb-6 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="text-xs sm:text-sm font-semibold text-indigo-300 uppercase tracking-wider">Количество участников:</label>
+                    <span id="playerCountLabel" class="font-pixel text-lg text-yellow-400 bg-indigo-950/80 px-3 py-1 rounded-lg border border-indigo-500/40">2 игрока</span>
+                </div>
+                
+                <input type="range" id="playerRange" min="1" max="30" value="2" oninput="onPlayerRangeChange(this.value)" class="w-full accent-indigo-500 h-2 bg-slate-700 rounded-lg cursor-pointer mb-4">
+
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button onclick="setPlayerCount(1)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">1 чел.</button>
+                    <button onclick="setPlayerCount(5)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">5 чел.</button>
+                    <button onclick="setPlayerCount(10)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">10 чел.</button>
+                    <button onclick="setPlayerCount(15)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">15 чел.</button>
+                    <button onclick="setPlayerCount(20)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">20 чел.</button>
+                    <button onclick="setPlayerCount(30)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 text-xs font-bold transition">30 чел.</button>
+                </div>
+            </div>
+
+            <!-- Player Names Input Grid -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Имена участников:</label>
+                    <button onclick="autoFillNames()" class="text-xs text-indigo-400 hover:text-indigo-300 underline">Автозаполнение</button>
+                </div>
+                <div id="playerInputs" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 max-h-60 sm:max-h-72 overflow-y-auto custom-scrollbar p-1">
+                    <!-- Dynamic player fields -->
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="w-full py-3.5 sm:py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-base sm:text-lg shadow-lg shadow-indigo-600/30 transition transform active:scale-95">
+                🚀 Начать викторину (45 вопросов)
+            </button>
+        </section>
+
+        <!-- SCREEN 2: GAMEPLAY -->
+        <section id="gameScreen" class="hidden flex-col gap-4">
+            
+            <!-- Top Bar: Current Player Turn & Roster Widget -->
+            <div class="card-glass rounded-xl p-3 sm:p-4 flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center space-x-3 w-full md:w-auto">
+                    <div id="activePlayerAvatar" class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-base shadow">
+                        1
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Отвечает участник:</div>
+                        <div id="activePlayerName" class="text-base sm:text-lg font-bold text-indigo-300">Игрок 1</div>
+                    </div>
+                </div>
+
+                <!-- Quick Turn Switcher for Teacher / Host or Manual Pick -->
+                <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
+                    <span class="text-xs text-slate-400 hidden sm:inline">Передать ход:</span>
+                    <select id="playerTurnSelect" onchange="manualSelectPlayer(this.value)" class="bg-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-2 border border-slate-700 outline-none focus:border-indigo-500 max-w-[180px] sm:max-w-xs">
+                        <!-- Dynamic options -->
+                    </select>
+                    <button onclick="toggleRosterModal()" class="px-2.5 py-2 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 text-xs font-semibold border border-indigo-500/30 transition">
+                        📊 Таблица (<span id="playerCountBadge">2</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Question Card -->
+            <div class="card-glass rounded-2xl p-4 sm:p-8 neon-border relative overflow-hidden">
+                <!-- Progress & Timer Bar -->
+                <div class="flex justify-between items-center text-xs font-mono text-indigo-400 font-bold mb-2">
+                    <span id="questionNum">ВОПРОС 1 / 45</span>
+                    <span id="timerText" class="text-slate-300">⏱ 20 сек</span>
+                </div>
+                
+                <div class="w-full bg-slate-800 h-2 rounded-full mb-5 overflow-hidden">
+                    <div id="timerBar" class="bg-indigo-500 h-full w-full transition-all duration-1000 ease-linear"></div>
+                </div>
+
+                <!-- Question Text -->
+                <h2 id="questionText" class="text-base sm:text-xl md:text-2xl font-bold text-white mb-6 leading-relaxed">
+                    Загрузка вопроса...
+                </h2>
+
+                <!-- Answers Options Grid -->
+                <div id="answersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Answer Buttons generated by JS -->
+                </div>
+            </div>
+
+            <!-- Explanation Feedback Box -->
+            <div id="feedbackBox" class="hidden card-glass rounded-2xl p-4 sm:p-5 border-l-4">
+                <div id="feedbackTitle" class="font-bold text-base sm:text-lg mb-1"></div>
+                <div id="feedbackDesc" class="text-xs sm:text-sm text-slate-300 mb-4"></div>
+                <button onclick="nextQuestion()" class="w-full sm:w-auto px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition shadow-lg">
+                    Следующий вопрос ➔
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: RESULTS / PODIUM -->
+        <section id="resultsScreen" class="hidden card-glass rounded-2xl p-4 sm:p-8 text-center neon-border max-w-3xl mx-auto">
+            <div class="text-4xl sm:text-5xl mb-3">🏆</div>
+            <h2 class="font-pixel text-lg sm:text-2xl text-yellow-400 mb-1">ФИНАЛ ВИКТОРИНЫ!</h2>
+            <p class="text-xs sm:text-sm text-slate-400 mb-4">Победитель соревнования:</p>
+            <div id="winnerName" class="text-2xl sm:text-4xl font-bold text-white mb-6 text-indigo-300">Игрок 1</div>
+
+            <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-800 mb-6">
+                <h3 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-3">Итоговая таблица всех участников</h3>
+                <div id="leaderboardList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-72 overflow-y-auto custom-scrollbar p-1 text-left">
+                    <!-- Dynamic Leaderboard list -->
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button onclick="restartGame()" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition">
+                    🔄 Сыграть снова (45 вопросов)
+                </button>
+                <button onclick="backToMenu()" class="px-6 py-3 rounded-xl card-glass hover:bg-slate-700 text-slate-300 font-bold text-sm transition">
+                    ⚙️ Настройки участников
+                </button>
+            </div>
+        </section>
+
+        <!-- MODAL: Full Roster Scoreboard (For 30 Players tracking during game) -->
+        <div id="rosterModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3">
+            <div class="card-glass rounded-2xl p-4 sm:p-6 max-w-3xl w-full max-h-[85vh] flex flex-col border border-indigo-500/30 shadow-2xl">
+                <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-3">
+                    <h3 class="font-bold text-base sm:text-lg text-white">📊 Таблица участников (<span id="modalPlayerCount">0</span>)</h3>
+                    <button onclick="toggleRosterModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">✕</button>
+                </div>
+                <div id="modalRosterGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 overflow-y-auto custom-scrollbar p-1 flex-1">
+                    <!-- Dynamic player cards -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-5xl text-center py-3 text-[11px] text-slate-500 border-t border-slate-800/60">
+        Учебный тренажер по информатике • 7 класс • Соответствие ФГОС • До 30 участников
+    </footer>
+
+    <script>
+        // --- 1. QUESTION DATABASE (50 Questions, Grade 7 CS, Medium Difficulty) ---
+        const questionBank = [
+            { q: "Сколько бит содержится в 4 байтах?", options: ["16 бит", "32 бита", "64 бита", "24 бита"], correct: 1, explanation: "В 1 байте = 8 бит. 4 байта * 8 = 32 бита." },
+            { q: "Какое десятичное число соответствует двоичному 1010₂?", options: ["8", "10", "12", "14"], correct: 1, explanation: "1010₂ = 8 + 0 + 2 + 0 = 10." },
+            { q: "Какая маска файлов соответствует файлам с расширением .jpg из ровно 3 символов в имени?", options: ["*.jpg", "???.jpg", "???.*", "*??.jpg"], correct: 1, explanation: "Символ '?' заменяет ровно 1 символ. '???' соответствует 3 символам." },
+            { q: "В кодировке Unicode на символ отводится 16 бит. Информационный объем слова «ИНФОРМАТИКА» равен:", options: ["11 байт", "22 байта", "88 бит", "176 байт"], correct: 1, explanation: "11 букв * 2 байта (16 бит) = 22 байта." },
+            { q: "Какое из устройств относится исключительно к устройствам ВВОДА информации?", options: ["Монитор", "Сканер", "Принтер", "Графопостроитель"], correct: 1, explanation: "Сканер считывает изображение и вводит его в ПК." },
+            { q: "Сколько Килобайт содержится в 2 Мегабайтах?", options: ["2000 Кб", "2048 Кб", "1024 Кб", "512 Кб"], correct: 1, explanation: "1 Мб = 1024 Кб. 2 Мб = 2048 Кб." },
+            { q: "Корректный путь к файлу в операционной системе Windows:", options: ["C:/Docs/test.txt", "C:\\Документы\\Школа\\отчет.docx", "http://site.ru/test.txt", "C:|Files|test.txt"], correct: 1, explanation: "В ОС Windows разделителем папок является обратный слэш '\\'." },
+            { q: "Какой символ в маске заменяет любую (в том числе пустую) последовательность символов?", options: ["?", "%", "*", "#"], correct: 2, explanation: "Звездочка '*' заменяет любую цепочку символов." },
+            { q: "Устройство ПК, выполняющее вычисления и обработку информации:", options: ["Оперативная память", "Жесткий диск", "Процессор", "Материнская плата"], correct: 2, explanation: "Центральный процессор (ЦПУ) — главное вычислительное устройство." },
+            { q: "Какое число НЕ может быть октетом в IP-адресе IPv4?", options: ["0", "192", "255", "280"], correct: 3, explanation: "Каждое число в IP-адресе находится в диапазоне от 0 до 255." },
+            { q: "Для цвета пикселя используется 3 бита. Сколько всего цветов в палитре?", options: ["3", "6", "8", "16"], correct: 2, explanation: "N = 2^b = 2³ = 8 цветов." },
+            { q: "Алгоритм, команды которого выполняются строго последовательно одна за другой:", options: ["Циклический", "Разветвляющийся", "Линейный", "Вспомогательный"], correct: 2, explanation: "Линейный алгоритм выполняются последовательно шаг за шагом." },
+            { q: "Сколько байт в 1 Килобайте?", options: ["1000 байт", "1024 байта", "512 байт", "8192 байта"], correct: 1, explanation: "1 Кб = 1024 байта (2¹⁰)." },
+            { q: "Переведите двоичное число 111₂ в десятичную систему:", options: ["5", "6", "7", "8"], correct: 2, explanation: "111₂ = 4 + 2 + 1 = 7." },
+            { q: "Какое расширение обычно имеют исполняемые программы в ОС Windows?", options: [".txt", ".exe", ".docx", ".png"], correct: 1, explanation: "Расширение .exe обозначает исполняемый файл." },
+            { q: "Оперативная память (ОЗУ) компьютера является:", options: ["Энергонезависимой", "Энергозависимой", "Оптической", "Магнитной"], correct: 1, explanation: "При выключении питания данные из ОЗУ стираются." },
+            { q: "В кодировке ASCII символ занимает 1 байт. Объем фразы «Отлично!» (8 символов) равен:", options: ["8 бит", "8 байт", "16 байт", "64 байта"], correct: 1, explanation: "8 символов * 1 байт = 8 байт." },
+            { q: "Какое устройство вывода создает бумажную копию документа?", options: ["Сканер", "Принтер", "Клавиатура", "Модем"], correct: 1, explanation: "Принтер выводит текстовую и графическую информацию на бумагу." },
+            { q: "Минимальная единица измерения количества информации:", options: ["Байт", "Бит", "Бод", "Пиксель"], correct: 1, explanation: "Бит принимают за наименьшую единицу информации." },
+            { q: "Графический редактор Paint создает изображения какого типа?", options: ["Векторные", "Растровые", "Фрактальные", "3D-модели"], correct: 1, explanation: "Paint является растровым графическим редактором." },
+            { q: "Растровое изображение состоит из мельчайших точек, называемых:", options: ["Векторами", "Пикселями", "Узлами", "Сайтами"], correct: 1, explanation: "Пиксель — минимальный элемент растрового изображения." },
+            { q: "Какая маска отберет все файлы, начинающиеся на букву 'k' с расширением .txt?", options: ["k*.txt", "k?.txt", "*k.txt", "k*.*"], correct: 0, explanation: "'k*.txt' означает: начинается на 'k', далее любые символы, расширение .txt." },
+            { q: "Десятичное число 12 в двоичной системе счисления записывается как:", options: ["1010₂", "1100₂", "1110₂", "1001₂"], correct: 1, explanation: "12 = 8 + 4 = 1100₂." },
+            { q: "Для хранения внешней информации в отключенном ПК используется:", options: ["Процессор", "ОЗУ", "Жесткий диск / SSD", "Кэш"], correct: 2, explanation: "Накопители (HDD/SSD) хранят файлы долговременно." },
+            { q: "Что из этого является сетевым протоколом передачи гипертекста?", options: ["FTP", "HTTP", "SMTP", "IP"], correct: 1, explanation: "HTTP (HyperText Transfer Protocol) используется для передачи веб-страниц." },
+            { q: "Наименьший элемент изображения на экране монитора:", options: ["Зерно", "Пиксель", "Сантиметр", "Символ"], correct: 1, explanation: "Экран монитора состоит из сетки пикселей." },
+            { q: "Сколько бит в полубайте (4 бита)?", options: ["2 бита", "4 бита", "8 бит", "16 бит"], correct: 1, explanation: "Полубайт содержит ровно 4 бита." },
+            { q: "Какое расширение обычно имеют графические файлы векторного формата?", options: [".bmp", ".svg", ".jpg", ".png"], correct: 1, explanation: "SVG — распространенный формат векторной графики." },
+            { q: "Какая структура файлов используется в большинстве современных ОС?", options: ["Линейная", "Табличная", "Иерархическая (дерево)", "Сетевая"], correct: 2, explanation: "Папки и подпапки образуют иерархическую древовидную структуру." },
+            { q: "Какое устройство компьютерных сетей соединяет локальную сеть с Интернетом?", options: ["Монитор", "Роутер (маршрутизатор)", "Звуковая карта", "Сканер"], correct: 1, explanation: "Маршрутизатор (роутер) перенаправляет пакеты между сетями." },
+            { q: "Векторное изображение при увеличении масштаба:", options: ["Теряет качество (зернистость)", "Не теряет качества", "Темнеет", "Превращается в текст"], correct: 1, explanation: "Векторная графика пересчитывается по формулам и не теряет четкости." },
+            { q: "Примером циклического алгоритма является:", options: ["Переход дороги по светофору", "Чистка зубов каждое утро", "Вычисление суммы двух чисел", "Написание имени"], correct: 1, explanation: "Повторяющиеся каждый день действия образуют цикл." },
+            { q: "Какая клавиша обычно используется для отмены последнего действия в программах?", options: ["Ctrl + C", "Ctrl + Z", "Ctrl + V", "Ctrl + A"], correct: 1, explanation: "Сочетание Ctrl+Z отменяет последнее действие." },
+            { q: "Сколько разных символов можно закодировать 8 битами (1 байтом)?", options: ["128", "256", "512", "1024"], correct: 1, explanation: "N = 2⁸ = 256 символов." },
+            { q: "Какое устройство служит для ввода звуковой информации в ПК?", options: ["Колонки", "Микрофон", "Наушники", "Звуковая плата"], correct: 1, explanation: "Микрофон преобразует звуковые волны в электрический сигнал." },
+            { q: "Программа, позволяющая просматривать веб-страницы в сети Интернет:", options: ["Провайдер", "Браузер", "Поисковик", "Текстовый редактор"], correct: 1, explanation: "Браузер (Chrome, Firefox и др.) отображает веб-сайты." },
+            { q: "Файл с именем «text.docx.txt» имеет расширение:", options: [".docx", ".txt", ".docx.txt", "text"], correct: 1, explanation: "Расширение файла определяется по последней точке — .txt." },
+            { q: "Какое из этих чисел является наибольшим?", options: ["1010₂", "1100₂", "1011₂", "1001₂"], correct: 1, explanation: "1100₂ в десятичной системе равен 12 (остальные 10, 11, 9)." },
+            { q: "Где хранятся базовые инструкции для загрузки компьютера (BIOS/UEFI)?", options: ["В ОЗУ", "В ПЗУ (ROM)", "На флешке", "В процессоре"], correct: 1, explanation: "ПЗУ (постоянное запоминающее устройство) хранит прошивку ПК." },
+            { q: "Для чего предназначена комбинация клавиш Ctrl + C?", options: ["Вырезать", "Вставить", "Копировать", "Сохранить"], correct: 2, explanation: "Ctrl + C копирует выделенный фрагмент в буфер обмена." },
+            { q: "Какое доменное имя верхнего уровня принадлежит России?", options: [".us", ".ru", ".de", ".cn"], correct: 1, explanation: "Домен .ru является национальным доменом РФ." },
+            { q: "Какая из этих программ является антивирусной?", options: ["WinRAR", "Kaspersky", "Photoshop", "Excel"], correct: 1, explanation: "Kaspersky — антивирусное ПО для защиты компьютера." },
+            { q: "Информационный объем текста равен 512 байтам. Сколько это в битах?", options: ["2048 бит", "4096 бит", "1024 бит", "5120 бит"], correct: 1, explanation: "512 байт * 8 = 4096 бит." },
+            { q: "Глубина цвета 8 бит позволяет кодировать палитру из:", options: ["16 цветов", "64 цветов", "256 цветов", "65536 цветов"], correct: 2, explanation: "2⁸ = 256 цветов." },
+            { q: "Какое из устройств НЕ является внешним накопителем?", options: ["USB-флешка", "Внешний SSD", "Оперативная память", "Карта памяти SD"], correct: 2, explanation: "ОЗУ расположена внутри ПК на материнской плате." },
+            { q: "Табличный процессор для работы со электронными таблицами:", options: ["MS Word", "MS Excel", "MS PowerPoint", "Paint"], correct: 1, explanation: "MS Excel предназначена для расчетов и работы с таблицами." },
+            { q: "Какое логическое выражение истинно, если X = 5?", options: ["(X > 10) ИЛИ (X < 7)", "(X > 5) И (X < 10)", "(X == 6)", "НЕ(X < 10)"], correct: 0, explanation: "(5 > 10) — ложь, но (5 < 7) — истина. В операции ИЛИ достаточно одной истины." },
+            { q: "Сколько байт содержит 0.5 Килобайта?", options: ["500 байт", "512 байт", "256 байт", "100 байт"], correct: 1, explanation: "1024 / 2 = 512 байт." },
+            { q: "Как называется вредоносная программа, маскирующаяся под полезное ПО?", options: ["Червь", "Троян (Троянский конь)", "Спам", "Брандмауэр"], correct: 1, explanation: "Троянские программы выдают себя за легитимный софт." },
+            { q: "В модели RGB основные цвета — это:", options: ["Красный, Зеленый, Синий", "Красный, Желтый, Синий", "Голубой, Пурпурный, Желтый", "Черный, Белый, Серый"], correct: 0, explanation: "RGB — Red (Красный), Green (Зеленый), Blue (Синий)." }
+        ];
+
+        // --- 2. GAME STATE ---
+        let playerCount = 2;
+        let players = [];
+        let currentQuestionIdx = 0;
+        let activePlayerIdx = 0;
+        let timer = null;
+        let timeLeft = 20;
+        let soundEnabled = true;
+        let activeQuestions = [];
+        const TOTAL_QUESTIONS_PER_ROUND = 45;
+
+        // Palette generator for up to 30 players
+        const baseColors = [
+            '#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#8b5cf6', '#06b6d4',
+            '#ec4899', '#3b82f6', '#84cc16', '#eab308', '#d946ef', '#14b8a6'
+        ];
+
+        function getPlayerColor(index) {
+            return baseColors[index % baseColors.length];
+        }
+
+        // --- 3. SOUND SYNTHESIZER (Web Audio API) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.04);
+                } else if (type === 'correct') {
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.22);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(110, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                }
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').innerText = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundToggle').innerText = soundEnabled ? '🔊 Звук: Вкл' : '🔇 Звук: Выкл';
+        }
+
+        // --- 4. SETUP LOGIC FOR UP TO 30 PLAYERS ---
+        function onPlayerRangeChange(val) {
+            setPlayerCount(parseInt(val, 10));
+        }
+
+        function setPlayerCount(count) {
+            playerCount = Math.min(30, Math.max(1, count));
+            document.getElementById('playerRange').value = playerCount;
+            document.getElementById('playerCountLabel').innerText = `${playerCount} ${getPluralPlayers(playerCount)}`;
+            renderPlayerInputs();
+        }
+
+        function getPluralPlayers(n) {
+            if (n % 10 === 1 && n % 100 !== 11) return 'игрок';
+            if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return 'игрока';
+            return 'игроков';
+        }
+
+        function renderPlayerInputs() {
+            const container = document.getElementById('playerInputs');
+            const currentVals = [];
+            for (let i = 0; i < 30; i++) {
+                const inp = document.getElementById(`playerNameInput_${i}`);
+                if (inp) currentVals[i] = inp.value;
+            }
+
+            container.innerHTML = '';
+            for (let i = 0; i < playerCount; i++) {
+                const color = getPlayerColor(i);
+                const defaultVal = currentVals[i] || `Игрок ${i + 1}`;
+                container.innerHTML += `
+                    <div class="flex items-center space-x-2 bg-slate-800/60 p-2 rounded-xl border border-slate-700/80">
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-xs shrink-0" style="background-color: ${color}">
+                            ${i + 1}
+                        </div>
+                        <input type="text" id="playerNameInput_${i}" value="${defaultVal}" placeholder="Имя игрока ${i + 1}" class="w-full bg-transparent border-b border-slate-600 focus:border-indigo-400 outline-none text-xs text-white py-0.5">
+                    </div>
+                `;
+            }
+        }
+
+        function autoFillNames() {
+            playSound('click');
+            for (let i = 0; i < playerCount; i++) {
+                const inp = document.getElementById(`playerNameInput_${i}`);
+                if (inp) inp.value = `Ученик ${i + 1}`;
+            }
+        }
+
+        // --- 5. GAME ENGINE ---
+        function startGame() {
+            playSound('click');
+            players = [];
+            for (let i = 0; i < playerCount; i++) {
+                const nameInput = document.getElementById(`playerNameInput_${i}`);
+                players.push({
+                    id: i,
+                    name: nameInput ? nameInput.value.trim() || `Ученик ${i + 1}` : `Ученик ${i + 1}`,
+                    score: 0,
+                    correctAnswers: 0,
+                    color: getPlayerColor(i)
+                });
+            }
+
+            // Shuffle question bank and select exactly 45 questions
+            const shuffled = [...questionBank].sort(() => Math.random() - 0.5);
+            activeQuestions = shuffled.slice(0, TOTAL_QUESTIONS_PER_ROUND);
+
+            currentQuestionIdx = 0;
+            activePlayerIdx = 0;
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('gameScreen').classList.add('flex');
+            document.getElementById('playerCountBadge').innerText = playerCount;
+
+            updatePlayerDropdown();
+            loadQuestion();
+        }
+
+        function updatePlayerDropdown() {
+            const select = document.getElementById('playerTurnSelect');
+            select.innerHTML = '';
+            players.forEach((p, idx) => {
+                select.innerHTML += `<option value="${idx}" ${idx === activePlayerIdx ? 'selected' : ''}>${idx + 1}. ${p.name} (${p.score} оч.)</option>`;
+            });
+        }
+
+        function manualSelectPlayer(idx) {
+            activePlayerIdx = parseInt(idx, 10);
+            updateActivePlayerUI();
+            playSound('click');
+        }
+
+        function updateActivePlayerUI() {
+            const p = players[activePlayerIdx];
+            const avatar = document.getElementById('activePlayerAvatar');
+            avatar.style.backgroundColor = p.color;
+            avatar.innerText = activePlayerIdx + 1;
+            document.getElementById('activePlayerName').innerText = p.name;
+            document.getElementById('playerTurnSelect').value = activePlayerIdx;
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIdx >= activeQuestions.length) {
+                endGame();
+                return;
+            }
+
+            // Reset UI State
+            document.getElementById('feedbackBox').classList.add('hidden');
+            const q = activeQuestions[currentQuestionIdx];
+            document.getElementById('questionNum').innerText = `ВОПРОС ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
+            document.getElementById('questionText').innerText = q.q;
+
+            updateActivePlayerUI();
+            updatePlayerDropdown();
+            renderAnswerOptions(true);
+            resetTimer();
+        }
+
+        function renderAnswerOptions(enabled) {
+            const q = activeQuestions[currentQuestionIdx];
+            const grid = document.getElementById('answersGrid');
+            grid.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                grid.innerHTML += `
+                    <button 
+                        ${enabled ? `onclick="submitAnswer(${idx})"` : 'disabled'}
+                        class="p-3.5 sm:p-4 rounded-xl card-glass border border-slate-700/80 text-left font-medium text-xs sm:text-sm text-slate-200 
+                        ${enabled ? 'hover:border-indigo-500 hover:bg-indigo-500/10 cursor-pointer active:scale-98' : 'opacity-60 cursor-not-allowed'} 
+                        transition duration-150 flex items-center justify-between group">
+                        <span class="pr-2 leading-snug">${opt}</span>
+                        <span class="w-6 h-6 rounded-full border border-slate-600 flex items-center justify-center text-[11px] text-slate-400 shrink-0 group-hover:border-indigo-400">
+                            ${['A', 'B', 'C', 'D'][idx]}
+                        </span>
+                    </button>
+                `;
+            });
+        }
+
+        function submitAnswer(chosenIdx) {
+            clearInterval(timer);
+            const q = activeQuestions[currentQuestionIdx];
+            const isCorrect = chosenIdx === q.correct;
+            let answeringPlayer = players[activePlayerIdx];
+
+            if (isCorrect) {
+                playSound('correct');
+                const timeBonus = Math.floor(timeLeft * 5);
+                const points = 100 + timeBonus;
+                answeringPlayer.score += points;
+                answeringPlayer.correctAnswers += 1;
+                showFeedback(true, `Верно! ${answeringPlayer.name} получает +${points} очков.`, q.explanation);
+            } else {
+                playSound('wrong');
+                showFeedback(false, `Неверно! Ответ ${answeringPlayer.name} был ошибочным.`, q.explanation);
+            }
+
+            renderAnswerOptions(false);
+            updatePlayerDropdown();
+        }
+
+        function showFeedback(isCorrect, title, desc) {
+            const box = document.getElementById('feedbackBox');
+            const titleEl = document.getElementById('feedbackTitle');
+            const descEl = document.getElementById('feedbackDesc');
+
+            box.classList.remove('hidden');
+            if (isCorrect) {
+                box.className = "card-glass rounded-2xl p-4 sm:p-5 border-l-4 border-emerald-500 bg-emerald-500/10 neon-glow-green";
+                titleEl.className = "font-bold text-base sm:text-lg mb-1 text-emerald-400";
+            } else {
+                box.className = "card-glass rounded-2xl p-4 sm:p-5 border-l-4 border-rose-500 bg-rose-500/10 neon-glow-red";
+                titleEl.className = "font-bold text-base sm:text-lg mb-1 text-rose-400";
+            }
+
+            titleEl.innerText = title;
+            descEl.innerText = desc;
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            // Automatically advance turn to next player in sequence
+            activePlayerIdx = (activePlayerIdx + 1) % playerCount;
+            loadQuestion();
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 20;
+            const bar = document.getElementById('timerBar');
+            const timerText = document.getElementById('timerText');
+            bar.style.width = '100%';
+            bar.className = "bg-indigo-500 h-full transition-all duration-1000 ease-linear";
+            timerText.innerText = `⏱ ${timeLeft} сек`;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerText.innerText = `⏱ ${timeLeft} сек`;
+                const pct = (timeLeft / 20) * 100;
+                bar.style.width = `${pct}%`;
+
+                if (timeLeft <= 5) {
+                    bar.className = "bg-rose-500 h-full transition-all duration-1000 ease-linear";
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    playSound('wrong');
+                    const q = activeQuestions[currentQuestionIdx];
+                    showFeedback(false, "Время вышло!", `Правильный ответ: ${q.options[q.correct]}. ${q.explanation}`);
+                    renderAnswerOptions(false);
+                }
+            }, 1000);
+        }
+
+        // --- 6. ROSTER MODAL FOR UP TO 30 PLAYERS ---
+        function toggleRosterModal() {
+            const modal = document.getElementById('rosterModal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                renderModalRoster();
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderModalRoster() {
+            document.getElementById('modalPlayerCount').innerText = playerCount;
+            const grid = document.getElementById('modalRosterGrid');
+            grid.innerHTML = '';
+
+            players.forEach((p, idx) => {
+                const isActive = idx === activePlayerIdx;
+                grid.innerHTML += `
+                    <div class="p-2.5 rounded-xl border flex items-center justify-between ${isActive ? 'bg-indigo-600/20 border-indigo-500' : 'bg-slate-800/60 border-slate-700/70'}">
+                        <div class="flex items-center space-x-2 truncate pr-1">
+                            <span class="w-6 h-6 rounded-md flex items-center justify-center font-bold text-white text-xs shrink-0" style="background-color: ${p.color}">${idx + 1}</span>
+                            <span class="font-bold text-xs text-white truncate">${p.name}</span>
+                        </div>
+                        <div class="text-xs font-mono font-bold text-yellow-400 shrink-0">${p.score} оч.</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- 7. END GAME / RESULTS PODIUM ---
+        function endGame() {
+            clearInterval(timer);
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            const ranked = [...players].sort((a, b) => b.score - a.score);
+            document.getElementById('winnerName').innerText = ranked[0].name;
+
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+            ranked.forEach((p, idx) => {
+                list.innerHTML += `
+                    <div class="flex justify-between items-center p-2.5 rounded-xl bg-slate-800/80 border border-slate-700">
+                        <div class="flex items-center space-x-2 truncate">
+                            <span class="font-bold text-xs text-slate-400 w-5">#${idx + 1}</span>
+                            <span class="w-5 h-5 rounded-md flex items-center justify-center font-bold text-white text-[10px]" style="background-color: ${p.color}">${p.id + 1}</span>
+                            <span class="font-bold text-white text-xs truncate">${p.name}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-mono font-bold text-yellow-400 text-xs block">${p.score} оч.</span>
+                            <span class="text-[10px] text-slate-400 block">${p.correctAnswers} отв.</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function restartGame() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            startGame();
+        }
+
+        function backToMenu() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('setupScreen').classList.remove('hidden');
+        }
+
+        // Initial setup
+        renderPlayerInputs();
+    </script>
+</body>
+</html>
